@@ -1,0 +1,7 @@
+h3. What is LinqExtended?
+
+LinqExtended is a set of extensions for IEnumerable<T> that aim to extend the functionality of Linq by adding new extensions. The goal of LinqExtended is to write as little code as possible and utilize the existing Linq extensions for logic.
+
+h3. License
+
+This code is licensed under the Revised BSD License. For more information, see the [[license]] wiki page.
