@@ -1,0 +1,5 @@
+C:\Development\Personal\github\LinqExtended\LinqExtended\bin\Debug\LinqExtended.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended\bin\Debug\LinqExtended.pdb
+C:\Development\Personal\github\LinqExtended\LinqExtended\obj\Debug\ResolveAssemblyReference.cache
+C:\Development\Personal\github\LinqExtended\LinqExtended\obj\Debug\LinqExtended.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended\obj\Debug\LinqExtended.pdb

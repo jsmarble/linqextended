@@ -1,0 +1,8 @@
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\bin\Debug\LinqExtended.Tests.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\bin\Debug\LinqExtended.Tests.pdb
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\bin\Debug\xunit.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\obj\Debug\ResolveAssemblyReference.cache
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\obj\Debug\LinqExtended.Tests.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\obj\Debug\LinqExtended.Tests.pdb
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\bin\Debug\LinqExtended.dll
+C:\Development\Personal\github\LinqExtended\LinqExtended.Tests\bin\Debug\LinqExtended.pdb
