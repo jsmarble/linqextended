@@ -201,5 +201,160 @@ namespace System.Linq.Extended
         }
 
         #endregion
+
+        #region Random
+
+        /// <summary>
+        /// Returns a random element from a sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">The sequence from which to return a random element.</param>
+        /// <returns>an element from the sequence.</returns>
+        public static TSource Random<TSource>(this IEnumerable<TSource> source)
+        {
+            if (source.Any())
+                return source.Random(1).FirstOrDefault();
+            else
+                return default(TSource);
+        }
+
+        /// <summary>
+        /// Returns a collection of random elements from a sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">The sequence from which to return the random elements.</param>
+        /// <returns>a <see cref="System.Collections.Generic.IEnumerable{T}"/> containing elements from the sequence.</returns>
+        /// <remarks>The results of this function will not contain duplicate elements.</remarks>
+        public static IEnumerable<T> Random<T>(this IEnumerable<T> source, int count)
+        {
+            if (count > source.Count())
+                throw new ArgumentOutOfRangeException("Value cannot be greater than the count of the source collection.");
+
+            List<T> itemPool = source.ToList();
+            List<T> result = new List<T>();
+            Random r = new Random();
+            for (int i = 0; i < count; i++)
+            {
+                int index = r.Next(0, itemPool.Count - 1);
+                T value = itemPool[index];
+                itemPool.Remove(value);
+                result.Add(value);
+                if (!itemPool.Any())
+                    break;
+            }
+            return result;
+        }
+
+        #endregion
+
+        #region IEnumerable<string> Join
+
+        public static string Join(this IEnumerable<string> source, string separator)
+        {
+            return source.Join(separator, false);
+        }
+
+        public static string Join(this IEnumerable<string> source, string separator, bool excludeEmptyItems)
+        {
+            if (excludeEmptyItems)
+                source = source.Except(x => string.IsNullOrEmpty(x));
+            return string.Join(separator, source.ToArray());
+        }
+
+        #endregion
+
+        #region Append
+
+        /// <summary>
+        /// Appends the value to the sequence.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">The sequence to append the value to.</param>
+        /// <param name="value">The value to append to the sequence.</param>
+        /// <returns>the sequence with the appended value.</returns>
+        public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource value)
+        {
+            return source.Concat(new TSource[] { value });
+        }
+
+        #endregion
+
+        #region ContainsAny
+
+        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
+        {
+            foreach (T item in values)
+            {
+                if (source.Contains(item))
+                    return true;
+            }
+            return false;
+        }
+
+        public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> equalityComparer)
+        {
+            foreach (T item in values)
+            {
+                if (source.Contains(item, equalityComparer))
+                    return true;
+            }
+            return false;
+        }
+
+        #endregion
+
+        #region ContainsAll
+
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
+        {
+            foreach (T item in values)
+            {
+                if (!source.Contains(item))
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> equalityComparer)
+        {
+            foreach (T item in values)
+            {
+                if (!source.Contains(item, equalityComparer))
+                    return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region Except
+
+        /// <summary>
+        /// Filters a sequence of values based on a predicate.
+        /// </summary>
+        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerable{T}"/> to filter.</typeparam>
+        /// <param name="source">The sequence to exclude elements from.</param>
+        /// <param name="predicate">The predicate to use to determine if an element will be excluded from the result.</param>
+        /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> 
+        /// that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+        {
+            return source.Where(item => !predicate(item));
+        }
+
+        /// <summary>
+        /// Filters a sequence to exclude the specified element.
+        /// </summary>
+        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerable{T}"/> to filter.</typeparam>
+        /// <param name="source">The sequence to exclude elements from.</param>
+        /// <param name="item">The element to exclude from the result.</param>
+        /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> 
+        /// that contains elements from the input sequence except the specified element.</returns>
+        public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> source, TSource item)
+        {
+            return source.Except(x => (object)x == (object)item);
+        }
+
+        #endregion
     }
 }
