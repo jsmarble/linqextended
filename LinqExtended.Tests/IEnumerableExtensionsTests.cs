@@ -65,5 +65,16 @@ namespace LinqExtended.Tests
             bool actual = numbers.ContainsAtMost(count);
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void ForEach_Invokes_Action_For_Each_Item()
+        {
+            int count = 10;
+            int actCount =0;
+            Action<int> act = (x) => actCount++;
+            var numbers = Enumerable.Range(1, count);
+            numbers.ForEach(act);
+            Assert.Equal(count, actCount);
+        }
     }
 }
