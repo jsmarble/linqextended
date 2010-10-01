@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace LinqExtended.Tests
+namespace System.Linq.Extended.Tests
 {
     public class IEnumerableExtensionsTests
     {
