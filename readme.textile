@@ -4,4 +4,4 @@ LinqExtended is a set of extensions for IEnumerable<T> that aim to extend the fu
 
 h3. License
 
-This code is licensed under the Revised BSD License. For more information, see the [[license]] wiki page.
+This code is licensed under the Revised BSD License. For more information, see the [[license]] wiki page or the license file included with the library.
