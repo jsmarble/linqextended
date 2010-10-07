@@ -19,15 +19,8 @@ namespace System.Linq.Extended
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
 
-            int actualCount = 0;
-            IEnumerator<TSource> enumerator = source.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                actualCount++;
-                if (actualCount >= count)
-                    return true;
-            }
-            return false;
+            int takeCount = source.Take(count).Count(); //Take method will take as many as exist up to the count.
+            return takeCount == count; //If the take count was less than the count param then the source did not contain at least [count] elements.
         }
 
         /// <summary>
@@ -42,15 +35,8 @@ namespace System.Linq.Extended
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count");
 
-            int actualCount = 0;
-            IEnumerator<TSource> enumerator = source.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                actualCount++;
-                if (actualCount > count)
-                    return false;
-            }
-            return true;
+            int takeCount = source.Take(count + 1).Count(); //Take method will take as many as exist up to the count. Take count+1 so we know if more existed than [count].
+            return takeCount <= count; //If the take count was less than or equal to the count param then the source did not contain more than [count] elements.
         }
         #endregion
 
@@ -65,9 +51,7 @@ namespace System.Linq.Extended
         public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (TSource item in source)
-            {
                 action(item);
-            }
         }
 
         #endregion
@@ -82,7 +66,7 @@ namespace System.Linq.Extended
         /// <param name="keySelector"> A function to extract a key from an element.</param>
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, Func<TSource, IComparable> keySelector)
         {
-            EqualityComparison<TSource> equalityComparison = new EqualityComparison<TSource>((x, y) => keySelector(x).CompareTo(keySelector(y)) == 0);
+            EqualityComparison<TSource> equalityComparison = (x, y) => keySelector(x).CompareTo(keySelector(y)) == 0;
             return source.Distinct(equalityComparison);
         }
 
@@ -135,7 +119,7 @@ namespace System.Linq.Extended
         /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a collection of keys.</returns>
         public static IOrderedEnumerable<TElement> OrderBy<TElement>(this IEnumerable<TElement> source, params Func<TElement, IComparable>[] keySelectors)
         {
-            return source.OrderBy(new Comparison<TElement>((x, y) =>
+            return source.OrderBy((x, y) =>
             {
                 foreach (Func<TElement, IComparable> keySelector in keySelectors)
                 {
@@ -146,7 +130,7 @@ namespace System.Linq.Extended
                         return result;
                 }
                 return 0;
-            }));
+            });
         }
 
         #endregion
@@ -186,7 +170,7 @@ namespace System.Linq.Extended
         /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a collection of keys.</returns>
         public static IOrderedEnumerable<TElement> OrderByDescending<TElement>(this IEnumerable<TElement> source, params Func<TElement, IComparable>[] keySelectors)
         {
-            return source.OrderByDescending(new Comparison<TElement>((x, y) =>
+            return source.OrderByDescending((x, y) =>
             {
                 foreach (Func<TElement, IComparable> keySelector in keySelectors)
                 {
@@ -197,7 +181,7 @@ namespace System.Linq.Extended
                         return result;
                 }
                 return 0;
-            }));
+            });
         }
 
         #endregion
@@ -212,10 +196,7 @@ namespace System.Linq.Extended
         /// <returns>an element from the sequence.</returns>
         public static TSource Random<TSource>(this IEnumerable<TSource> source)
         {
-            if (source.Any())
-                return source.Random(1).FirstOrDefault();
-            else
-                return default(TSource);
+            return source.Random(1).FirstOrDefault();
         }
 
         /// <summary>
@@ -283,22 +264,12 @@ namespace System.Linq.Extended
 
         public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values)
         {
-            foreach (T item in values)
-            {
-                if (source.Contains(item))
-                    return true;
-            }
-            return false;
+            return values.Any(x => source.Contains(x));
         }
 
         public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> equalityComparer)
         {
-            foreach (T item in values)
-            {
-                if (source.Contains(item, equalityComparer))
-                    return true;
-            }
-            return false;
+            return values.Any(x => source.Contains(x, equalityComparer));
         }
 
         #endregion
@@ -307,22 +278,12 @@ namespace System.Linq.Extended
 
         public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values)
         {
-            foreach (T item in values)
-            {
-                if (!source.Contains(item))
-                    return false;
-            }
-            return true;
+            return values.All(x => source.Contains(x));
         }
 
         public static bool ContainsAll<T>(this IEnumerable<T> source, IEnumerable<T> values, IEqualityComparer<T> equalityComparer)
         {
-            foreach (T item in values)
-            {
-                if (!source.Contains(item, equalityComparer))
-                    return false;
-            }
-            return true;
+            return values.All(x => source.Contains(x, equalityComparer));
         }
 
         #endregion

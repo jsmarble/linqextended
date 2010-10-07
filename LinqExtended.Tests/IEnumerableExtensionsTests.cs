@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace System.Linq.Extended.Tests
@@ -17,6 +15,7 @@ namespace System.Linq.Extended.Tests
             bool actual = numbers.ContainsAtLeast(count);
             Assert.Equal(expected, actual);
         }
+
         [Fact]
         public void ContainsAtLeast_Checking_More_Than_Actual_Returns_True()
         {
@@ -46,6 +45,7 @@ namespace System.Linq.Extended.Tests
             bool actual = numbers.ContainsAtMost(count);
             Assert.Equal(expected, actual);
         }
+
         [Fact]
         public void ContainsAtMost_Checking_More_Than_Actual_Returns_False()
         {
