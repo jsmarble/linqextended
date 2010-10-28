@@ -5,11 +5,11 @@ using System.Text;
 
 namespace System
 {
-    public class ComparisonContainer<T> : IComparer<T>
+    public class ComparisonAdapter<T> : IComparer<T>
     {
         private Comparison<T> comparison;
 
-        public ComparisonContainer(Comparison<T> comparison)
+        public ComparisonAdapter(Comparison<T> comparison)
         {
             this.comparison = comparison;
         }

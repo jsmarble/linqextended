@@ -5,11 +5,11 @@ using System.Text;
 
 namespace System
 {
-    public class EqualityComparisonContainer<T> : IEqualityComparer<T>
+    public class EqualityComparisonAdapter<T> : IEqualityComparer<T>
     {
         private EqualityComparison<T> equalityComparison;
 
-        public EqualityComparisonContainer(EqualityComparison<T> equalityComparison)
+        public EqualityComparisonAdapter(EqualityComparison<T> equalityComparison)
         {
             if (equalityComparison == null) throw new ArgumentNullException("equalityComparison");
             this.equalityComparison = equalityComparison;

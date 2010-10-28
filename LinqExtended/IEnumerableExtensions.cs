@@ -6,6 +6,8 @@ namespace System.Linq.Extended
 {
     public static class IEnumerableExtensions
     {
+        private static Random random = new Random();
+
         #region ContainsAt[Least|Most]
         /// <summary>
         /// Determines whether a sequence contains at least a given number of elements.
@@ -78,7 +80,7 @@ namespace System.Linq.Extended
         /// <param name="equalityComparison">The <see cref="System.EqualityComparison{T}"/> to use to compare the elements in the collection.</param>
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, EqualityComparison<TSource> equalityComparison)
         {
-            IEqualityComparer<TSource> comparer = new EqualityComparisonContainer<TSource>(equalityComparison);
+            IEqualityComparer<TSource> comparer = new EqualityComparisonAdapter<TSource>(equalityComparison);
             return source.Distinct(comparer);
         }
 
@@ -107,30 +109,35 @@ namespace System.Linq.Extended
         /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparison.</returns>
         public static IOrderedEnumerable<TSource> OrderBy<TSource>(this IEnumerable<TSource> source, Comparison<TSource> comparison)
         {
-            return source.OrderBy(x => x, new ComparisonContainer<TSource>(comparison));
+            return source.OrderBy(x => x, new ComparisonAdapter<TSource>(comparison));
         }
 
+        #endregion
+
+        #region ThenBy
+
         /// <summary>
-        /// Sorts the elements of a sequence in ascending order according to a collection of keys.
+        /// Performs a subsequent ordering in a sequence in ascending order by using a specified comparer.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
         /// <param name="source">A sequence of values to order.</param>
-        /// <param name="keySelectors">A collection of functions to extract keys from an element.</param>
-        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a collection of keys.</returns>
-        public static IOrderedEnumerable<TElement> OrderBy<TElement>(this IEnumerable<TElement> source, params Func<TElement, IComparable>[] keySelectors)
+        /// <param name="comparer">An <see cref="System.Collections.Generic.IComparer{T}"/> to compare elements.</param>
+        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparer.</returns>
+        public static IOrderedEnumerable<TSource> ThenBy<TSource>(this IOrderedEnumerable<TSource> source, IComparer<TSource> comparer)
         {
-            return source.OrderBy((x, y) =>
-            {
-                foreach (Func<TElement, IComparable> keySelector in keySelectors)
-                {
-                    IComparable keyX = keySelector(x);
-                    IComparable keyY = keySelector(y);
-                    int result = keyX.CompareTo(keyY);
-                    if (result != 0)
-                        return result;
-                }
-                return 0;
-            });
+            return source.ThenBy(x => x, comparer);
+        }
+
+        /// <summary>
+        /// Performs a subsequent ordering in a sequence in ascending order by using a specified comparison.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="comparison">The <see cref="System.Comparison{T}"/> to use to compare the elements in the collection.</param>
+        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparison.</returns>
+        public static IOrderedEnumerable<TSource> ThenBy<TSource>(this IOrderedEnumerable<TSource> source, Comparison<TSource> comparison)
+        {
+            return source.ThenBy(x => x, new ComparisonAdapter<TSource>(comparison));
         }
 
         #endregion
@@ -158,7 +165,7 @@ namespace System.Linq.Extended
         /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparison.</returns>
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource>(this IEnumerable<TSource> source, Comparison<TSource> comparison)
         {
-            return source.OrderByDescending(x => x, new ComparisonContainer<TSource>(comparison));
+            return source.OrderByDescending(x => x, new ComparisonAdapter<TSource>(comparison));
         }
 
         /// <summary>
@@ -185,45 +192,60 @@ namespace System.Linq.Extended
         }
 
         #endregion
-
-        #region Random
+      
+        #region ThenByDescending
 
         /// <summary>
-        /// Returns a random element from a sequence.
+        /// Performs a subsequent ordering in a sequence in descending order by using a specified comparer.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
-        /// <param name="source">The sequence from which to return a random element.</param>
-        /// <returns>an element from the sequence.</returns>
-        public static TSource Random<TSource>(this IEnumerable<TSource> source)
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="comparer">An <see cref="System.Collections.Generic.IComparer{T}"/> to compare elements.</param>
+        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparer.</returns>
+        public static IOrderedEnumerable<TSource> ThenByDescending<TSource>(this IOrderedEnumerable<TSource> source, IComparer<TSource> comparer)
         {
-            return source.Random(1).FirstOrDefault();
+            return source.ThenByDescending(x => x, comparer);
         }
 
         /// <summary>
-        /// Returns a collection of random elements from a sequence.
+        /// Performs a subsequent ordering in a sequence in descending order by using a specified comparison.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="comparison">The <see cref="System.Comparison{T}"/> to use to compare the elements in the collection.</param>
+        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a comparison.</returns>
+        public static IOrderedEnumerable<TSource> ThenByDescending<TSource>(this IOrderedEnumerable<TSource> source, Comparison<TSource> comparison)
+        {
+            return source.ThenByDescending(x => x, new ComparisonAdapter<TSource>(comparison));
+        }
+
+        #endregion
+
+        #region Shuffle
+
+        /// <summary>
+        /// Returns a collection of random elements from a sequence. Note that the nature of randomizing the sequence requires enumerating the entire sequence.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
         /// <param name="source">The sequence from which to return the random elements.</param>
         /// <returns>a <see cref="System.Collections.Generic.IEnumerable{T}"/> containing elements from the sequence.</returns>
         /// <remarks>The results of this function will not contain duplicate elements.</remarks>
-        public static IEnumerable<T> Random<T>(this IEnumerable<T> source, int count)
+        public static IEnumerable<TSource> Shuffle<TSource>(this IEnumerable<TSource> source)
         {
-            if (count > source.Count())
-                throw new ArgumentOutOfRangeException("Value cannot be greater than the count of the source collection.");
-
-            List<T> itemPool = source.ToList();
-            List<T> result = new List<T>();
-            Random r = new Random();
-            for (int i = 0; i < count; i++)
+            List<TSource> list = source.ToList();
+            if (list.Count > 1)
             {
-                int index = r.Next(0, itemPool.Count - 1);
-                T value = itemPool[index];
-                itemPool.Remove(value);
-                result.Add(value);
-                if (!itemPool.Any())
-                    break;
+                for (int i = list.Count - 1; i >= 0; i--)
+                {
+                    TSource tmp = list[i];
+                    int randomIndex = random.Next(i + 1);
+
+                    //Swap elements
+                    list[i] = list[randomIndex];
+                    list[randomIndex] = tmp;
+                }
             }
-            return result;
+            return list;
         }
 
         #endregion
@@ -314,6 +336,33 @@ namespace System.Linq.Extended
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> source, TSource item)
         {
             return source.Except(x => (object)x == (object)item);
+        }
+
+        #endregion
+
+        #region Batch
+
+        /// <summary>
+        /// Creates batches from the enumerable source according to the specified batch size. The source will be enumerated completely for each batch.
+        /// </summary>
+        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerable{T}"/> to batch.</typeparam>
+        /// <param name="source">The sequence to batch.</param>
+        /// <param name="batchSize">The size of the batches.</param>
+        /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> that contains batches from the input sequence.</returns>
+        public static IEnumerable<IEnumerable<TSource>> Batch<TSource>(this IEnumerable<TSource> source, int batchSize)
+        {
+            List<TSource> batch = new List<TSource>();
+            foreach (TSource item in source)
+            {
+                batch.Add(item);
+                if (batch.Count == batchSize)
+                {
+                    yield return batch;
+                    batch = new List<TSource>();
+                }
+            }
+            if (batch.Count > 0)
+                yield return batch;
         }
 
         #endregion

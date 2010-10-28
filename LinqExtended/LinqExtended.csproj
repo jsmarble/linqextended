@@ -40,9 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComparisonContainer.cs" />
+    <Compile Include="ComparisonAdapter.cs" />
     <Compile Include="EqualityComparison.cs" />
-    <Compile Include="EqualityComparisonContainer.cs" />
+    <Compile Include="EqualityComparisonAdapter.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
