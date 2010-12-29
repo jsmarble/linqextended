@@ -97,16 +97,40 @@ namespace System.Linq.Extended.Tests
             var guids = GetGuids(totalSize);
             var batches = guids.Batch(batchSize);
             Assert.Equal(batchSize, batches.First().Count());
+            Assert.Equal(5, batches.Last().Count());
         }
 
         [Fact]
-        public void Batch_Does_Not_Returns_Empty_Last_Batch_When_Total_Size_A_Multiple_Of_Batch_Size()
+        public void Batch_Does_Not_Return_Empty_Last_Batch_When_Total_Size_A_Multiple_Of_Batch_Size()
+        {
+            int batchSize = 10;
+            int totalSize = Convert.ToInt32(batchSize * 3);
+            var guids = GetGuids(totalSize);
+            var batches = guids.Batch(batchSize).ToList();
+            Assert.Equal(batchSize, batches.Last().Count());
+        }
+
+        [Fact]
+        public void Batch_Does_Not_Enumerate_Past_First_Batch()
+        {
+            int takeCount = 5;
+            int batchSize = 10;
+            int totalSize = Convert.ToInt32(batchSize * 3);
+            var guids = GetGuidsThrowExceptionAfterCount(totalSize, batchSize);
+            var batches = guids.Batch(batchSize);
+            var result = batches.First().Take(takeCount); //Enumerate only the first [takeCount] items in the first batch.
+            Assert.Equal(takeCount, result.Count());
+        }
+
+        [Fact]
+        public void Batch_All_Items_Flattened_From_Batches_Equal_Total_Size()
         {
             int batchSize = 10;
             int totalSize = Convert.ToInt32(batchSize * 3);
             var guids = GetGuids(totalSize);
             var batches = guids.Batch(batchSize);
-            Assert.Equal(batchSize, batches.Last().Count());
+            var flattenedGuids = batches.SelectMany(x => x);
+            Assert.Equal(totalSize, flattenedGuids.Count());
         }
 
         [Fact]
@@ -142,6 +166,17 @@ namespace System.Linq.Extended.Tests
         {
             for (int i = 0; i < count; i++)
             {
+                yield return Guid.NewGuid().ToString();
+            }
+        }
+
+        public IEnumerable<string> GetGuidsThrowExceptionAfterCount(int count, int exceptionCount)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (i >= exceptionCount && exceptionCount > 0)
+                    throw new InvalidOperationException();
+
                 yield return Guid.NewGuid().ToString();
             }
         }

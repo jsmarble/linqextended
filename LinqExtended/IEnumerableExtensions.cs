@@ -192,7 +192,7 @@ namespace System.Linq.Extended
         }
 
         #endregion
-      
+
         #region ThenByDescending
 
         /// <summary>
@@ -351,18 +351,7 @@ namespace System.Linq.Extended
         /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> that contains batches from the input sequence.</returns>
         public static IEnumerable<IEnumerable<TSource>> Batch<TSource>(this IEnumerable<TSource> source, int batchSize)
         {
-            List<TSource> batch = new List<TSource>();
-            foreach (TSource item in source)
-            {
-                batch.Add(item);
-                if (batch.Count == batchSize)
-                {
-                    yield return batch;
-                    batch = new List<TSource>();
-                }
-            }
-            if (batch.Count > 0)
-                yield return batch;
+            return new BatchEnumerable<TSource>(source, batchSize);
         }
 
         #endregion

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BatchEnumerable.cs" />
     <Compile Include="ComparisonAdapter.cs" />
     <Compile Include="EqualityComparison.cs" />
     <Compile Include="EqualityComparisonAdapter.cs" />
