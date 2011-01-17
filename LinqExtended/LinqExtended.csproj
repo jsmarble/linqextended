@@ -8,7 +8,7 @@
     <ProjectGuid>{D92F944F-8BDB-4F19-8264-698E63E31063}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqExtended</RootNamespace>
+    <RootNamespace>System.Linq</RootNamespace>
     <AssemblyName>LinqExtended</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

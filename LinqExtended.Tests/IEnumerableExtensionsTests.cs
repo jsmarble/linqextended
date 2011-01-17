@@ -3,7 +3,7 @@ using System.Linq;
 using Xunit;
 using System.Collections.Generic;
 
-namespace System.Linq.Extended.Tests
+namespace System.Linq.Tests
 {
     public class IEnumerableExtensionsTests
     {
@@ -160,6 +160,17 @@ namespace System.Linq.Extended.Tests
                     countSharingIndex++;
             }
             Assert.True(countSharingIndex < numbers.Count * 0.005); //Check that less than 0.5% of numbers ended up at the same index.
+        }
+
+        [Fact]
+        public void Repeat_Returns_Same_Values()
+        {
+            var guids = Enumerable.Range(1, 10).Select(x => Guid.NewGuid()).Repeat(3);
+            var guidGroups = guids.GroupBy(x => x);
+            foreach (var group in guidGroups)
+            {
+                Assert.Equal(3, group.Count());
+            }
         }
 
         public IEnumerable<string> GetGuids(int count)

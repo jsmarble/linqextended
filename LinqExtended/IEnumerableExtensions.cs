@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace System.Linq.Extended
+namespace System.Linq
 {
     public static class IEnumerableExtensions
     {
@@ -352,6 +352,21 @@ namespace System.Linq.Extended
         public static IEnumerable<IEnumerable<TSource>> Batch<TSource>(this IEnumerable<TSource> source, int batchSize)
         {
             return new BatchEnumerable<TSource>(source, batchSize);
+        }
+
+        #endregion
+
+        #region Repeat
+
+        public static IEnumerable<T> Repeat<T>(this IEnumerable<T> source, int count)
+        {
+            foreach (var item in source)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    yield return item;
+                }
+            }
         }
 
         #endregion

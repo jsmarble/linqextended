@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace System.Linq.Extended
+namespace System.Linq
 {
     public class BatchEnumerable<TSource> : IEnumerable<IEnumerable<TSource>>
     {

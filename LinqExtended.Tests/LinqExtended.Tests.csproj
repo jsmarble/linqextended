@@ -8,7 +8,7 @@
     <ProjectGuid>{C3642B48-E1F4-4B0B-8844-035F7910CD8A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqExtended.Tests</RootNamespace>
+    <RootNamespace>System.Linq.Tests</RootNamespace>
     <AssemblyName>LinqExtended.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
