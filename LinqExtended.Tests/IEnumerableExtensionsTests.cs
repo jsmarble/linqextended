@@ -96,6 +96,7 @@ namespace System.Linq.Tests
             int totalSize = Convert.ToInt32(batchSize * 2.5);
             var guids = GetGuids(totalSize);
             var batches = guids.Batch(batchSize);
+            System.Diagnostics.Debug.WriteLine(batches.Count());
             Assert.Equal(batchSize, batches.First().Count());
             Assert.Equal(5, batches.Last().Count());
         }

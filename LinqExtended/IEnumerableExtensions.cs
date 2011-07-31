@@ -343,15 +343,41 @@ namespace System.Linq
         #region Batch
 
         /// <summary>
-        /// Creates batches from the enumerable source according to the specified batch size. The source will be enumerated completely for each batch.
+        /// Creates batches from the enumerable source according to the specified batch size.
         /// </summary>
-        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerable{T}"/> to batch.</typeparam>
+        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerable{T}"/>.</typeparam>
         /// <param name="source">The sequence to batch.</param>
         /// <param name="batchSize">The size of the batches.</param>
         /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> that contains batches from the input sequence.</returns>
         public static IEnumerable<IEnumerable<TSource>> Batch<TSource>(this IEnumerable<TSource> source, int batchSize)
         {
-            return new BatchEnumerable<TSource>(source, batchSize);
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                bool skipFirstMoveNext = true;
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Move(batchSize, skipFirstMoveNext);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Moves the enumerator source to next element the specific number of times.
+        /// </summary>
+        /// <typeparam name="TSource">An <see cref="System.Collections.Generic.IEnumerator{T}"/>.</typeparam>
+        /// <param name="source">The enumerator to enumerate.</param>
+        /// <param name="batchSize">The number of times to move to the next element.</param>
+        /// <returns>An <see cref="System.Collections.Generic.IEnumerable{T}"/> that contains the enumerated elements.</returns>
+        public static IEnumerable<TSource> Move<TSource>(this IEnumerator<TSource> source, int count, bool skipFirstMoveNext)
+        {
+            List<TSource> result = new List<TSource>();
+            int yieldCount = 0;
+            while (yieldCount++ < count && (skipFirstMoveNext || source.MoveNext()))
+            {
+                skipFirstMoveNext = false;
+                result.Add(source.Current);
+            }
+            return result;
         }
 
         #endregion
