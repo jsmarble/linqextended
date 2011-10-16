@@ -168,29 +168,6 @@ namespace System.Linq
             return source.OrderByDescending(x => x, new ComparisonAdapter<TSource>(comparison));
         }
 
-        /// <summary>
-        /// Sorts the elements of a sequence in descending order according to a collection of keys.
-        /// </summary>
-        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
-        /// <param name="source">A sequence of values to order.</param>
-        /// <param name="keySelectors">A collection of functions to extract keys from an element.</param>
-        /// <returns>An <see cref="System.Linq.IOrderedEnumerable{T}"/> whose elements are sorted according to a collection of keys.</returns>
-        public static IOrderedEnumerable<TElement> OrderByDescending<TElement>(this IEnumerable<TElement> source, params Func<TElement, IComparable>[] keySelectors)
-        {
-            return source.OrderByDescending((x, y) =>
-            {
-                foreach (Func<TElement, IComparable> keySelector in keySelectors)
-                {
-                    IComparable keyX = keySelector(x);
-                    IComparable keyY = keySelector(y);
-                    int result = keyX.CompareTo(keyY);
-                    if (result != 0)
-                        return result;
-                }
-                return 0;
-            });
-        }
-
         #endregion
 
         #region ThenByDescending
@@ -261,7 +238,7 @@ namespace System.Linq
         {
             if (excludeEmptyItems)
                 source = source.Except(x => string.IsNullOrEmpty(x));
-            return string.Join(separator, source.ToArray());
+            return string.Join(separator, source);
         }
 
         #endregion
